@@ -1,6 +1,6 @@
 (* Coursera Programming Languages, Homework 3, Provided Code *)
 
-exception NoAnswer
+
 
 datatype pattern = Wildcard
 		 | Variable of string
@@ -58,3 +58,26 @@ val longest_string3 = longest_string_helper(fn (x,y)=> x > y)
 val longest_string4 = longest_string_helper(fn (x,y ) =>x >=y )
 
 val longest_capitalized = longest_string1 o only_capitals 
+
+val rev_string = String.implode o List.rev o String.explode
+
+exception NoAnswer
+
+fun first_answer f xs =
+    case xs  of
+	[] => raise NoAnswer
+     | x::xs' => case f(x) of
+		     NONE => first_answer f xs'
+		  | SOME v => v  
+
+fun all_answers f xs =
+    let
+	fun all_answers_helper acc xs1=
+	    case xs1 of
+	      []=>  SOME acc 
+	     |x::xs' => case f(x) of  
+			    NONE =>NONE
+			    |SOME v => all_answers_helper (v@acc) xs'
+    in 
+	all_answers_helper [] xs
+    end
