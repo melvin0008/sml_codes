@@ -101,8 +101,7 @@ fun check_pat p=
                 [] => true
               | x :: x' => if List.exists (fn y => y = x) x' then false else get_distinct x'
     in get_distinct (get_all_strings (p))       
-      
-      end
+    end
 
 fun match (v : valu, p : pattern) =
     case p of
