@@ -40,10 +40,7 @@ datatype typ = Anything
 
 fun only_capitals xs =
     List.filter (fn x => Char.isUpper (String.sub( x, 0)))xs
-(*
-fun f (x,y)=
-    if String.size x > String.size y then x else y
-*)
+
 fun longest_string1(xs)=
     List.foldl (fn (x,y)=> if String.size x > String.size y then x else y) "" xs
 
@@ -80,4 +77,5 @@ fun all_answers f xs =
 			    |SOME v => all_answers_helper (v@acc) xs'
     in 
 	all_answers_helper [] xs
+    
     end
