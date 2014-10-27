@@ -79,3 +79,51 @@ fun all_answers f xs =
 	all_answers_helper [] xs
     
     end
+
+fun count_wildcards p =
+    g (fn x => 1) (fn x => 0) p
+fun count_wild_and_variable_lengths p =
+    g (fn x => 1) (fn x => String.size(x)) p
+
+fun count_some_var (s : string, p : pattern) =
+    g (fn x => 0) (fn x => if x = s then 1 else 0) p
+
+fun check_pat p=
+    let fun get_all_strings pat =
+	    case pat of 
+		Wildcard =>[]
+	      |  Variable x =>[x] 
+	     |TupleP xs' => List.foldl (fn (pat, i)=>get_all_strings pat @i)[] xs'
+	     |ConstructorP(_, p) => get_all_strings p 
+	     | _ =>[] 
+	fun get_distinct (lst)=
+	      case lst of
+                [] => true
+              | x :: x' => if List.exists (fn y => y = x) x' then false else get_distinct x'
+    in get_distinct (get_all_strings (p))       
+      
+      end
+
+fun match (v : valu, p : pattern) =
+    case p of
+        Wildcard => SOME []
+      | Variable s => SOME [(s, v)]
+      | UnitP => (case v of 
+                     Unit => SOME [] 
+                   | _ => NONE)
+      | ConstP i => (case v of 
+                        Const j => if i = j then SOME [] else NONE
+                      | _ => NONE)
+      | TupleP l1 => (case v of
+                      Tuple l2 => (all_answers (fn (x,y) => match(x,y)) (ListPair.zipEq(l2, l1)) handle UnequalLengths => NONE)
+                                  | _ => NONE)
+      | ConstructorP (s, pat) => (case v of
+                                 Constructor (va, b) => if s =va then match(b, pat) else NONE
+                                   | _ =>NONE) 
+											    
+                                 
+fun first_match a lst =
+    SOME (first_answer (fn x => match(a, x)) lst) 
+                                      handle NoAnswer => NONE
+
+
